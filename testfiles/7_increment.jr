@@ -10,4 +10,4 @@ x--
 x += 51
 x -= 2
 
-print x
+print(x)

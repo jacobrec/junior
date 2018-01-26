@@ -5,9 +5,9 @@ Hello, World!
 hi
 yes
 **/
-print "Hello, World!"
-print 1
+print("Hello, World!")
+print(1)
 print("")
 
-print "hi" || 2
-print nil || "yes"
+print("hi" || 2)
+print(nil || "yes")

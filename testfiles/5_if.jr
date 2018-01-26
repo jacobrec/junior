@@ -10,14 +10,14 @@ let c
 if b {
     x = "It Worked!"
 }
-print x
+print(x)
 
 if !b {
     x = "it failed"
 } else {
     x = "It Worked again!"
 }
-print x
+print(x)
 
 
 if b || c {
@@ -25,4 +25,4 @@ if b || c {
 } else {
     x = "it failed"
 }
-print x
+print(x)

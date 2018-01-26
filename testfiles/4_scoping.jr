@@ -14,11 +14,11 @@ let b = "global b"
     {
         let a = "inner a"
         b = "inner b"
-        print a
-        print b
+        print(a)
+        print(b)
     }
-    print a
-    print b
+    print(a)
+    print(b)
 }
-print a
-print b
+print(a)
+print(b)

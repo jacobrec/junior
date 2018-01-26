@@ -48,7 +48,6 @@ reservedWords = {
     "if": TokenType.IF,
     "nil": TokenType.NIL,
     "or": TokenType.OR,
-    "print": TokenType.PRINT,
     "return": TokenType.RETURN,
     "break": TokenType.BREAK,
     "continue": TokenType.CONTINUE,
