@@ -61,6 +61,29 @@ class Parser():
 
         return Stmt.Function(name, args, body)
 
+    def anonFunction(self):
+        if self.check(TokenType.IDENTIFIER):
+            self.error(
+                self.peek(), "Names not allowed in anonymus declarations")
+        args = []
+
+        self.consume(TokenType.LEFT_PAREN,
+                     "Expect '(' in %s declaration" % type)
+
+        while not self.check(TokenType.RIGHT_PAREN):
+            args.append(self.consume(TokenType.IDENTIFIER,
+                                     "Expected parameter name"))
+            self.match(TokenType.COMMA)
+        self.consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters")
+        if len(args) > 250:
+            self.error(peek(), "Too many arguments")
+
+        self.consume(TokenType.LEFT_BRACE,
+                     "requires block after %s declaration" % type)
+        body = self.blockStatement()
+
+        return Stmt.Function(None, args, body)
+
     def statement(self):
         if self.match(TokenType.PRINT):
             return self.printStatement()
@@ -168,6 +191,8 @@ class Parser():
         return stmts
 
     def expression(self):
+        if self.match(TokenType.FUNCTION):
+            return self.anonFunction()
         return self.assignment()
 
     def assignment(self):

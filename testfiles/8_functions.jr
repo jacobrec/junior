@@ -7,6 +7,13 @@
 6
 7
 8
+1
+2
+3
+1
+4
+2
+4
 */
 fun add(a, b, c) {
   print(a + b + c)
@@ -52,3 +59,28 @@ fun loopy(){
 }
 
 print(loopy())
+
+
+fun makeCounter(){
+    let i = 0
+    return fun(){
+        i++
+        print(i)
+    }
+}
+
+
+let counter = makeCounter()
+counter()
+counter()
+let counter2 = makeCounter()
+counter()
+counter2()
+counter()
+counter2()
+
+let y = fun(x){
+    return x * x
+}
+
+print(y(2))

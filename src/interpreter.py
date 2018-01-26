@@ -85,9 +85,11 @@ class Interpreter():
         #     raise RuntimeError(expr.locTok, "not a callable object")
 
     def visitFunction(self, stmt):
-        func = Function(stmt)
-        self.enviroment.define(stmt.name, func)
-        return None
+        func = Function(stmt, self.enviroment)
+        if stmt.name is not None:
+            self.enviroment.define(stmt.name, func)
+            return None
+        return func
 
     def visitBlock(self, block):
         return self.executeBlock(block.stmts, Enviroment(enclosing=self.enviroment))
@@ -289,11 +291,12 @@ class Callable():
 
 
 class Function():
-    def __init__(self, declaration):
+    def __init__(self, declaration, closure):
         self.declaration = declaration
+        self.closure = closure
 
     def call(self, interpreter, args):
-        enviro = Enviroment(interpreter.globals)
+        enviro = Enviroment(self.closure)
         for x in range(len(self.declaration.args)):
             enviro.define(self.declaration.args[x], args[x])
 
