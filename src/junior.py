@@ -58,7 +58,8 @@ def error(token, message):
 
 
 def runtimeError(token, message):
-    print("Runtime Error on %s: %s" % (token, message))
+    print("[line %d] Runtime Error on %s: %s" %
+          (token.line, token.type, message))
 
 
 def report(line, where, message):

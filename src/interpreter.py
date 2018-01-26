@@ -1,21 +1,27 @@
 from tokens import TokenType
+from tokens import Token
 import junior
+import time
+import nativefuncs
 
 
 class Interpreter():
     def __init__(self):
-        self.enviroment = Enviroment()
+        self.globals = Enviroment()
+        self.enviroment = self.globals
+
+        nativefuncs.addNatives(self.globals)
 
     def visitVar(self, stmt):
         value = None
         if stmt.initializer is not None:
             value = self.evaluate(stmt.initializer)
-        self.enviroment.define(stmt.name.lexeme, value, stmt.isConst)
+        self.enviroment.define(stmt.name, value, stmt.isConst)
         return value
 
     def visitAssignment(self, stmt):
         value = self.evaluate(stmt.value)
-        self.enviroment.assign(stmt.name.lexeme, value)
+        self.enviroment.assign(stmt.name, value)
         return value
 
     def visitExpression(self, stmt):
@@ -60,11 +66,29 @@ class Interpreter():
         value = self.evaluate(stmt.expr)
         print(str(value))
 
+    def visitCall(self, expr):
+        func = self.evaluate(expr.caller)
+        args = [self.evaluate(x) for x in expr.args]
+
+        if len(args) != func.argNum():
+            raise RuntimeError(
+                expr.locTok, "Expected %d arguments but you only gave me %d"
+                % (func.argNum(), len(args)))
+        # try:
+        return func.call(self, args)
+        # except Exception as e:
+        #     raise RuntimeError(expr.locTok, "not a callable object")
+
+    def visitFunction(self, stmt):
+        func = Function(stmt)
+        self.enviroment.define(stmt.name, func)
+        return None
+
     def visitBlock(self, block):
         return self.executeBlock(block.stmts, Enviroment(enclosing=self.enviroment))
 
     def visitVariable(self, expr):
-        return self.enviroment.get(expr.name.lexeme)
+        return self.enviroment.get(expr.name)
 
     def visitTernary(self, expr):
         left = self.evaluate(expr.left)
@@ -179,14 +203,14 @@ class Interpreter():
             self.enviroment = prev
 
     def error(self, token, message):
-        raise RuntimeError(message, token)
+        raise RuntimeError(token, message)
 
     def evaluate(self, expr):
         return expr.accept(self)
 
 
 class RuntimeError(Exception):
-    def __init__(self, msg, tok):
+    def __init__(self, tok, msg):
         self.msg = msg
         self.tok = tok
 
@@ -218,32 +242,60 @@ class Enviroment():
         self.__consts = []
 
     def define(self, name, value, isConst=False):
-        if name in self.__values:
-            raise RuntimeError(name, "Variable %s already defined" % name)
+        if name.lexeme in self.__values:
+            raise RuntimeError(
+                name, "Variable %s already defined" % name.lexeme)
+            return
         if isConst:
-            self.__consts.append(name)
-        self.__values[name] = value
+            self.__consts.append(name.lexeme)
+        self.__values[name.lexeme] = value
 
     def assign(self, name, value):
-        if name in self.__consts:
-            raise RuntimeError(name, "Constant %s cannot be changed" % name)
-        elif name in self.__values:
-            self.__values[name] = value
+        if name.lexeme in self.__consts:
+            raise RuntimeError(
+                name, "Constant %s cannot be changed" % name.lexeme)
+            return
+        elif name.lexeme in self.__values:
+            self.__values[name.lexeme] = value
             return
 
         if self.enclosing is not None:
             self.enclosing.assign(name, value)
             return
-        raise RuntimeError(name, "Undefined variable %s" % name)
+        raise RuntimeError(name, "Undefined variable %s" % name.lexeme)
 
     def get(self, name):
         try:
-            return self.__values[name]
+            return self.__values[name.lexeme]
         except KeyError:
             if self.enclosing is not None:
                 return self.enclosing.get(name)
             else:
-                raise RuntimeError(name, "Undefined variable %s" % name)
+                raise RuntimeError(name, "Undefined variable %s" % name.lexeme)
+
+    def __str__(self):
+        return str(self.__values)
+
+
+class Callable():
+    def __init__(self, call, argNum):
+        self.call = call
+        self.argNum = argNum
+
+
+class Function():
+    def __init__(self, declaration):
+        self.declaration = declaration
+
+    def call(self, interpreter, args):
+        enviro = Enviroment(interpreter.globals)
+        for x in range(len(self.declaration.args)):
+            enviro.define(self.declaration.args[x], args[x])
+
+        interpreter.executeBlock(self.declaration.body.stmts, enviro)
+
+    def argNum(self):
+        return len(self.declaration.args)
 
 
 class LoopExit(Exception):

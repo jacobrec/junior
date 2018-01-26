@@ -1,4 +1,4 @@
-# 08:01:52 PM on January 25, 2018
+# 11:02:05 PM on January 25, 2018
 from printer import stringify
 
 # Auto generated for class Stmt
@@ -125,6 +125,23 @@ class Continue(Stmt):
 
 	def accept(self, visitor):
 		return visitor.visitContinue(self)
+
+	def __str__(self):
+		return stringify(self)
+
+	def __repr__(self):
+		return stringify(self)
+
+
+# Auto generated for class Function
+class Function(Stmt):
+	def __init__(self, name, args, body):
+		self.name = name
+		self.args = args
+		self.body = body
+
+	def accept(self, visitor):
+		return visitor.visitFunction(self)
 
 	def __str__(self):
 		return stringify(self)

@@ -50,7 +50,8 @@ data = [[("Expr", []),
          ("Literal", ["value"]),
          ("Unary", ["op", "right"]),
          ("Variable", ["name"]),
-         ("Assignment", ["name", "value"])
+         ("Assignment", ["name", "value"]),
+         ("Call", ["caller", "locTok", "args"])
          ],
 
         [("Stmt", []),
@@ -61,7 +62,8 @@ data = [[("Expr", []),
          ("If", ["condition", "thenBranch", "elseBranch"]),
          ("For", ["init", "condition", "incr", "body"]),
          ("Break", ["layers"]),
-         ("Continue", ["layers"])
+         ("Continue", ["layers"]),
+         ("Function", ["name", "args", "body"])
          ]]
 if __name__ == "__main__":
     folder = "src/"

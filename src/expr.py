@@ -1,4 +1,4 @@
-# 08:01:52 PM on January 25, 2018
+# 11:02:05 PM on January 25, 2018
 from printer import stringify
 
 # Auto generated for class Expr
@@ -128,6 +128,23 @@ class Assignment(Expr):
 
 	def accept(self, visitor):
 		return visitor.visitAssignment(self)
+
+	def __str__(self):
+		return stringify(self)
+
+	def __repr__(self):
+		return stringify(self)
+
+
+# Auto generated for class Call
+class Call(Expr):
+	def __init__(self, caller, locTok, args):
+		self.caller = caller
+		self.locTok = locTok
+		self.args = args
+
+	def accept(self, visitor):
+		return visitor.visitCall(self)
 
 	def __str__(self):
 		return stringify(self)

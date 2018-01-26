@@ -1,0 +1,7 @@
+/**
+True
+*/
+
+let x = time()
+
+print(x != time())

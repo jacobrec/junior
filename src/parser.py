@@ -28,6 +28,8 @@ class Parser():
     def declaration(self):
         if self.match(TokenType.VAR, TokenType.CONST):
             return self.varDeclaration(self.peek(-1))
+        if self.match(TokenType.FUNCTION):
+            return self.function("function")
         return self.statement()
 
     def varDeclaration(self, tok):
@@ -37,6 +39,27 @@ class Parser():
         if self.match(TokenType.EQUAL):
             init = self.expression()
         return Stmt.Var(name, init, False if tok == TokenType.VAR else True)
+
+    def function(self, type):
+        name = self.consume(TokenType.IDENTIFIER, "Expect %s name" % type)
+        args = []
+
+        self.consume(TokenType.LEFT_PAREN,
+                     "Expect '(' in %s declaration" % type)
+
+        while not self.check(TokenType.RIGHT_PAREN):
+            args.append(self.consume(TokenType.IDENTIFIER,
+                                     "Expected parameter name"))
+            self.match(TokenType.COMMA)
+        self.consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters")
+        if len(args) > 250:
+            self.error(peek(), "Too many arguments")
+
+        self.consume(TokenType.LEFT_BRACE,
+                     "requires block after %s declaration" % type)
+        body = self.blockStatement()
+
+        return Stmt.Function(name, args, body)
 
     def statement(self):
         if self.match(TokenType.PRINT):
@@ -229,7 +252,31 @@ class Parser():
             return Expr.Unary(op, right)
         if self.match(TokenType.PLUS_PLUS, TokenType.MINUS_MINUS):
             return self.crement()
-        return self.primary()
+        return self.call()
+
+    def call(self):
+        expr = self.primary()
+        while True:
+            if self.match(TokenType.LEFT_PAREN):
+                expr = self.finishCall(expr)
+            else:
+                break
+
+        return expr
+
+    def finishCall(self, expr):
+        args = []
+        if not self.check(TokenType.RIGHT_PAREN):
+            args.append(self.expression())
+            while self.match(TokenType.COMMA):
+                args.append(self.expression())
+
+        loc = self.consume(TokenType.RIGHT_PAREN, "Expecting ')' after args")
+
+        if len(args) > 250:
+            self.error(peek(), "Cannot have more than 250 arguments.")
+
+        return Expr.Call(expr, loc, args)
 
     def primary(self):
         if self.match(TokenType.FALSE):
