@@ -61,8 +61,9 @@ data = [[("Expr", []),
          ("Block", ["stmts"]),
          ("If", ["condition", "thenBranch", "elseBranch"]),
          ("For", ["init", "condition", "incr", "body"]),
-         ("Break", ["layers"]),
-         ("Continue", ["layers"]),
+         ("Break", ["locTok", "layers"]),
+         ("Continue", ["locTok", "layers"]),
+         ("Return", ["locTok", "value"]),
          ("Function", ["name", "args", "body"])
          ]]
 if __name__ == "__main__":

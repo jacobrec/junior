@@ -44,7 +44,7 @@ class Interpreter():
                 self.evaluate(stmt.body)
                 if stmt.incr is not None:
                     self.evaluate(stmt.incr)
-            except LoopExit as l:
+            except JExit as l:
                 if l.amount > 1:
                     l.amount -= 1
                     raise l
@@ -52,15 +52,20 @@ class Interpreter():
                     if stmt.incr is not None:
                         self.evaluate(stmt.incr)
                     continue
-                else:
+                elif l.type == TokenType.BREAK:
                     break
+                else:
+                    raise l
         return None
 
     def visitContinue(self, stmt):
-        raise LoopExit(TokenType.CONTINUE, stmt.layers.value)
+        raise JExit(TokenType.CONTINUE, stmt.layers.value)
 
     def visitBreak(self, stmt):
-        raise LoopExit(TokenType.BREAK, stmt.layers.value)
+        raise JExit(TokenType.BREAK, stmt.layers.value)
+
+    def visitReturn(self, stmt):
+        raise JExit(TokenType.RETURN, 1, self.evaluate(stmt.value))
 
     def visitPrint(self, stmt):
         value = self.evaluate(stmt.expr)
@@ -197,7 +202,7 @@ class Interpreter():
             self.enviroment = enviro
             for stmt in stmts:
                 self.evaluate(stmt)
-        except LoopExit as l:
+        except JExit as l:
             raise l
         finally:
             self.enviroment = prev
@@ -292,13 +297,20 @@ class Function():
         for x in range(len(self.declaration.args)):
             enviro.define(self.declaration.args[x], args[x])
 
-        interpreter.executeBlock(self.declaration.body.stmts, enviro)
+        try:
+            interpreter.executeBlock(self.declaration.body.stmts, enviro)
+        except JExit as e:
+            if e.type == TokenType.RETURN:
+                return e.value
+            else:
+                raise e
 
     def argNum(self):
         return len(self.declaration.args)
 
 
-class LoopExit(Exception):
-    def __init__(self, type, amount):
+class JExit(Exception):
+    def __init__(self, type, amount, value=None):
         self.type = type
         self.amount = amount
+        self.value = value

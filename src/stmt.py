@@ -1,4 +1,4 @@
-# 08:40:00 AM on January 26, 2018
+# 09:03:46 AM on January 26, 2018
 from printer import stringify
 
 # Auto generated for class Stmt
@@ -105,7 +105,8 @@ class For(Stmt):
 
 # Auto generated for class Break
 class Break(Stmt):
-	def __init__(self, layers):
+	def __init__(self, locTok, layers):
+		self.locTok = locTok
 		self.layers = layers
 
 	def accept(self, visitor):
@@ -120,11 +121,28 @@ class Break(Stmt):
 
 # Auto generated for class Continue
 class Continue(Stmt):
-	def __init__(self, layers):
+	def __init__(self, locTok, layers):
+		self.locTok = locTok
 		self.layers = layers
 
 	def accept(self, visitor):
 		return visitor.visitContinue(self)
+
+	def __str__(self):
+		return stringify(self)
+
+	def __repr__(self):
+		return stringify(self)
+
+
+# Auto generated for class Return
+class Return(Stmt):
+	def __init__(self, locTok, value):
+		self.locTok = locTok
+		self.value = value
+
+	def accept(self, visitor):
+		return visitor.visitReturn(self)
 
 	def __str__(self):
 		return stringify(self)

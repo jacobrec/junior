@@ -74,6 +74,8 @@ class Parser():
             return self.breakStatement()
         elif self.match(TokenType.CONTINUE):
             return self.breakStatement("continue")
+        elif self.match(TokenType.RETURN):
+            return self.returnStatement()
 
         return self.expressionStatement()
 
@@ -134,18 +136,24 @@ class Parser():
         return Stmt.Block([Stmt.For(init, cond, incr, self.blockStatement())])
 
     def breakStatement(self, type="break"):
+        locTok = self.peek(-1)
         try:
             l = self.expression()
         except ParseError:
             l = Expr.Literal(1)
 
         if type == "continue":
-            return Stmt.Continue(l)
+            return Stmt.Continue(locTok, l)
         elif type == "break":
-            return Stmt.Break(l)
+            return Stmt.Break(locTok, l)
 
-    def continueStatement(self):
-        return Stmt.Continue(self.expression())
+    def returnStatement(self):
+        locTok = self.peek(-1)
+        try:
+            val = self.expression()
+        except ParseError:
+            val = None
+        return Stmt.Return(locTok, val)
 
     def blockStatement(self):
         return Stmt.Block(self.block())
