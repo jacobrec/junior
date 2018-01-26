@@ -13,3 +13,8 @@ def addNatives(enviro):
         lambda x, y: print(y[0]),       # The function call
         lambda: 1                       # The number of arguments
     ))
+
+    enviro.define(Token(None, "input", None, None), interpreter.Callable(
+        lambda x, y: input(),           # The function call
+        lambda: 0                       # The number of arguments
+    ))
