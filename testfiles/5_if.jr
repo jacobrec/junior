@@ -1,0 +1,28 @@
+/**
+It Worked!
+It Worked again!
+Pretty sure it all works now.
+*/
+let x = "it failed"
+let b = true
+let c
+
+if b {
+    x = "It Worked!"
+}
+print x
+
+if !b {
+    x = "it failed"
+} else {
+    x = "It Worked again!"
+}
+print x
+
+
+if b || c {
+    x = "Pretty sure it all works now."
+} else {
+    x = "it failed"
+}
+print x

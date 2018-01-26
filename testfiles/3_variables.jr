@@ -1,0 +1,14 @@
+/** Variables and constants
+Runtime Error on Constant y cannot be changed: y
+2
+2
+*/
+// *Note, this depends on how errors are printed, check to make sure they haven't changed
+let x = 1
+const y = 2
+
+x = 2
+y = 1
+
+print x
+print y

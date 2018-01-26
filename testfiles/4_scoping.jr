@@ -1,0 +1,24 @@
+/** For testing scoping of variables
+inner a
+inner b
+outer a
+inner b
+global a
+inner b
+*/
+let a = "global a"
+let b = "global b"
+{
+    let a = "outer a"
+    b = "outer b"
+    {
+        let a = "inner a"
+        b = "inner b"
+        print a
+        print b
+    }
+    print a
+    print b
+}
+print a
+print b

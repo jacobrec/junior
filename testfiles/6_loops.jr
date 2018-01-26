@@ -1,0 +1,72 @@
+/**
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+0
+1
+2
+3
+0
+2
+4
+6
+8
+tada
+*/
+{
+    let i
+    for i = 0, i < 10, i = i + 1 {
+        print i+1
+    }
+
+    {
+        for i > 0 {
+            i = i - 1
+            print i
+        }
+    }
+}
+for let i = 0, i < 10, i = i + 1 {
+    print i
+    if i >= 3 {
+        break
+    }
+}
+
+
+for let i = 0, i < 10, i = i + 1  {
+    for let j = 0, j < 10, j = j + 1 {
+        break 2
+        print j
+    }
+}
+
+for let i = 0, i < 10, i = i + 1 {
+    if i % 2 != 0{
+        continue
+    }
+    print i
+}
+
+
+for {
+    print "tada"
+    break
+}
