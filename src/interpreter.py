@@ -73,16 +73,15 @@ class Interpreter():
 
     def visitCall(self, expr):
         func = self.evaluate(expr.caller)
-        args = [self.evaluate(x) for x in expr.args]
+        if hasattr(func, "call"):
+            return func.call(self, args)
+            args = [self.evaluate(x) for x in expr.args]
 
-        if len(args) != func.argNum():
-            raise RuntimeError(
-                expr.locTok, "Expected %d arguments but you only gave me %d"
-                % (func.argNum(), len(args)))
-        # try:
-        return func.call(self, args)
-        # except Exception as e:
-        #     raise RuntimeError(expr.locTok, "not a callable object")
+            if len(args) != func.argNum():
+                raise RuntimeError(
+                    expr.locTok, "Expected %d arguments but you only gave me %d"
+                    % (func.argNum(), len(args)))
+        raise RuntimeError(expr.locTok, "not a callable object")
 
     def visitFunction(self, stmt):
         func = Function(stmt, self.enviroment)
