@@ -1,5 +1,6 @@
 import lexer
 import parser
+import resolver
 import interpreter
 from tokens import TokenType
 from printer import printAst
@@ -44,8 +45,10 @@ def runFile(fileName):
 
 
 def run(inp, interp=None):
-
-    val = interpreter.interpret(parser.parse(lexer.lex(inp)), interp)
+    toks = lexer.lex(inp)
+    ast = parser.parse(toks)
+    sta = resolver.resolve(ast)
+    val = interpreter.interpret(ast, interp)
     if val is not None:
         print(chr(187) + " " + str(val))
 
